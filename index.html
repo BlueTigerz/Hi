@@ -39,7 +39,6 @@
       border-radius: 2px;
     }
 
-    /* REAL PNG TEXTURES */
     .i-piece { background-image: url("diamondore.png"); background-size: cover; }
     .o-piece { background-image: url("coalore.png"); background-size: cover; }
     .t-piece { background-image: url("cobblestone.png"); background-size: cover; }
@@ -60,11 +59,27 @@
       font-size: 14px;
       color: #ccc;
     }
+
+    #leaderboard {
+      margin-top: 20px;
+      color: #55ff55;
+      text-shadow: 0 0 4px #2b7c2b;
+      font-size: 16px;
+    }
+
+    #leaderboard table {
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    #leaderboard th, #leaderboard td {
+      padding: 4px 10px;
+      border-bottom: 1px solid #55ff55;
+    }
   </style>
 </head>
 <body>
 
-  <!-- MUSIC -->
   <audio id="bgm" src="MinecraftCreator8bitVRC6Cover.mp3" loop></audio>
 
   <h1 style="color:#55ff55; text-shadow:0 0 10px #2b7c2b;">Minecraft Tetris</h1>
@@ -80,6 +95,15 @@
     Controls: ← → or A D to move, ↑ or W to rotate, ↓ or S to drop faster.
   </div>
 
+  <!-- LEADERBOARD SECTION -->
+  <div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <div id="leaderboardData">Loading...</div>
+  </div>
+
+  <!-- External score sender -->
+  <script src="score.js"></script>
+
   <script>
     window.onload = () => {
       document.body.style.opacity = "1";
@@ -91,6 +115,8 @@
       document.addEventListener("keydown", () => {
         bgm.play();
       }, { once: true });
+
+      loadLeaderboard();
     };
 
     const rows = 20;
@@ -136,10 +162,15 @@
       curRow = 0;
       curCol = 3;
 
-      /* GAME OVER CHECK */
       if (collides(curRow, curCol, current.shape)) {
-        alert("Game Over!");
         clearInterval(interval);
+        alert("Game Over!");
+
+        const username = prompt("Enter your username for the leaderboard:", "player");
+
+        if (username && typeof sendScore === "function") {
+          sendScore(username, score);
+        }
       }
     }
 
@@ -278,6 +309,26 @@
     newPiece();
     draw();
     interval = setInterval(step, 500);
+
+    function loadLeaderboard() {
+      fetch("get_leaderboard.php")
+      .then(res => res.json())
+      .then(data => {
+        let html = "<table>";
+        html += "<tr><th>Player</th><th>Score</th></tr>";
+
+        data.forEach(row => {
+          html += `<tr><td>${row.username}</td><td>${row.score}</td></tr>`;
+        });
+
+        html += "</table>";
+        document.getElementById("leaderboardData").innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("leaderboardData").innerHTML = "Error loading leaderboard.";
+        console.error(err);
+      });
+    }
   </script>
 
 </body>

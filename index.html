@@ -7,63 +7,25 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background: #1a1a1a;
       overflow: hidden;
-    }
-
-    /* FULLSCREEN MENU */
-    #menu {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(#1a1a1a, #000);
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #d0ffca;
-      text-shadow: 0 0 8px #3a7c3a;
-      font-size: 22px;
-      opacity: 1;
-      transition: opacity 1s ease;
-      z-index: 10;
-    }
-
-    #menu h1 {
-      font-size: 42px;
-      margin-bottom: 20px;
-      color: #55ff55;
-      text-shadow: 0 0 12px #2b7c2b;
-    }
-
-    #menu.fade {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* GAME AREA */
-    #container {
-      display: none;
       flex-direction: column;
       align-items: center;
       padding-top: 20px;
-      height: 100vh;
-      background: #1a1a1a;
       opacity: 0;
       transition: opacity 1s ease;
     }
 
-    #container.show {
-      display: flex;
-      opacity: 1;
-    }
-
+    /* GAME BOARD */
     #game {
       display: grid;
       grid-template-columns: repeat(10, 24px);
       grid-template-rows: repeat(20, 24px);
       gap: 1px;
-      background: #333;
+      background: #2e2e2e;
       padding: 6px;
-      border-radius: 4px;
+      border-radius: 6px;
       box-shadow: 0 0 20px #000;
     }
 
@@ -74,42 +36,67 @@
       border-radius: 2px;
     }
 
-    /* THEMES */
-    /* Overworld */
-    .over-i { background: #3c6eaf; }
-    .over-o { background: #c9b458; }
-    .over-t { background: #8a4ca0; }
-    .over-j { background: #6b6b6b; }
-    .over-l { background: #b87333; }
-    .over-s { background: #4ab46a; }
-    .over-z { background: #b03030; }
+    /* MINECRAFT‑STYLE BLOCK TEXTURES (CSS simulated) */
 
-    /* Nether */
-    .nether-i { background: #ff4500; }
-    .nether-o { background: #b22222; }
-    .nether-t { background: #8b0000; }
-    .nether-j { background: #ff6347; }
-    .nether-l { background: #ff8c00; }
-    .nether-s { background: #cd5c5c; }
-    .nether-z { background: #ff0000; }
+    /* Diamond block */
+    .i-piece {
+      background: linear-gradient(135deg, #4fd3ff, #2aa8cc);
+      box-shadow: inset 0 0 6px #1a6a80;
+    }
 
-    /* End */
-    .end-i { background: #c9c97a; }
-    .end-o { background: #b28bd6; }
-    .end-t { background: #7a5bb0; }
-    .end-j { background: #4b4b4b; }
-    .end-l { background: #6a6a6a; }
-    .end-s { background: #9c7bd4; }
-    .end-z { background: #d49bff; }
+    /* Grass block */
+    .o-piece {
+      background: linear-gradient(#4caf50 40%, #795548 40%);
+      box-shadow: inset 0 0 4px #2e7d32;
+    }
 
-    /* Pixel */
-    .pix-i { background: #3c6eaf; }
-    .pix-o { background: #c9b458; }
-    .pix-t { background: #8a4ca0; }
-    .pix-j { background: #6b6b6b; }
-    .pix-l { background: #b87333; }
-    .pix-s { background: #4ab46a; }
-    .pix-z { background: #b03030; }
+    /* Purpur block */
+    .t-piece {
+      background: linear-gradient(135deg, #b57aff, #8e4bd1);
+      box-shadow: inset 0 0 6px #5a2a8a;
+    }
+
+    /* Cobblestone */
+    .j-piece {
+      background: repeating-linear-gradient(
+        45deg,
+        #9e9e9e,
+        #9e9e9e 4px,
+        #757575 4px,
+        #757575 8px
+      );
+      box-shadow: inset 0 0 4px #424242;
+    }
+
+    /* Oak planks */
+    .l-piece {
+      background: repeating-linear-gradient(
+        90deg,
+        #c49b63,
+        #c49b63 6px,
+        #a67c52 6px,
+        #a67c52 12px
+      );
+      box-shadow: inset 0 0 4px #5d3f1f;
+    }
+
+    /* Leaves */
+    .s-piece {
+      background: repeating-linear-gradient(
+        45deg,
+        #4caf50,
+        #4caf50 4px,
+        #388e3c 4px,
+        #388e3c 8px
+      );
+      box-shadow: inset 0 0 4px #1b5e20;
+    }
+
+    /* Redstone block */
+    .z-piece {
+      background: linear-gradient(135deg, #ff3b3b, #b30000);
+      box-shadow: inset 0 0 6px #4a0000;
+    }
 
     #scoreboard {
       margin-top: 10px;
@@ -121,248 +108,223 @@
     #info {
       margin-top: 6px;
       font-size: 14px;
-      text-align: center;
-      color: #cccccc;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
 
-  <!-- FULLSCREEN MENU -->
-  <div id="menu">
-    <h1>BLUE TIGERZ MINECRAFT TETRIS</h1>
-    <div>Choose your theme:</div>
-    <br>
-    <div>A — Overworld</div>
-    <div>B — Nether</div>
-    <div>C — The End</div>
-    <div>D — Pixel Colors</div>
-    <br><br>
-    <div>(Press A, B, C, or D)</div>
+  <!-- MUSIC -->
+  <audio id="bgm" src="MinecraftCreator8bitVRC6Cover.mp3" loop></audio>
+
+  <h1 style="color:#55ff55; text-shadow:0 0 10px #2b7c2b;">Minecraft Tetris</h1>
+
+  <div id="game"></div>
+
+  <div id="scoreboard">
+    Score: <span id="score">0</span> |
+    High Score: <span id="highscore">0</span>
   </div>
 
-  <!-- GAME -->
-  <div id="container">
-    <div id="game"></div>
-    <div id="scoreboard">
-      Score: <span id="score">0</span> |
-      High Score: <span id="highscore">0</span>
-    </div>
-    <div id="info">
-      Controls: ← → or A D to move, ↑ or W to rotate, ↓ or S to drop faster.
-    </div>
+  <div id="info">
+    Controls: ← → or A D to move, ↑ or W to rotate, ↓ or S to drop faster.
   </div>
 
   <script>
-    let theme = "pix"; // default until chosen
+    /* Fade in */
+    window.onload = () => {
+      document.body.style.opacity = "1";
 
-    /* THEME SELECTION */
-    document.addEventListener("keydown", e => {
-      if (!["a","b","c","d","A","B","C","D"].includes(e.key)) return;
+      const bgm = document.getElementById("bgm");
+      bgm.volume = 0.4;
+      bgm.play().catch(() => {
+        console.log("Autoplay blocked until user interacts.");
+      });
 
-      if (e.key.toLowerCase() === "a") theme = "over";
-      if (e.key.toLowerCase() === "b") theme = "nether";
-      if (e.key.toLowerCase() === "c") theme = "end";
-      if (e.key.toLowerCase() === "d") theme = "pix";
+      document.addEventListener("keydown", () => {
+        bgm.play();
+      }, { once: true });
+    };
 
-      startGame();
-    });
+    const rows = 20;
+    const cols = 10;
+    const game = document.getElementById('game');
 
-    function startGame() {
-      document.getElementById("menu").classList.add("fade");
+    let score = 0;
+    let highScore = localStorage.getItem("tetrisHighScoreMinecraft") || 0;
+    document.getElementById("highscore").innerText = highScore;
 
-      setTimeout(() => {
-        document.getElementById("container").classList.add("show");
-        initTetris();
-      }, 1000);
+    let grid = [];
+    for (let r = 0; r < rows; r++) {
+      grid[r] = [];
+      for (let c = 0; c < cols; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        game.appendChild(cell);
+        grid[r][c] = { filled: false, type: null, el: cell };
+      }
     }
 
-    /* TETRIS GAME */
-    function initTetris() {
-      const rows = 20;
-      const cols = 10;
-      const game = document.getElementById('game');
+    const shapes = [
+      { shape: [[1,1,1,1]], type: 'i-piece' },
+      { shape: [[1,1],[1,1]], type: 'o-piece' },
+      { shape: [[0,1,0],[1,1,1]], type: 't-piece' },
+      { shape: [[1,0,0],[1,1,1]], type: 'j-piece' },
+      { shape: [[0,0,1],[1,1,1]], type: 'l-piece' },
+      { shape: [[1,1,0],[0,1,1]], type: 's-piece' },
+      { shape: [[0,1,1],[1,1,0]], type: 'z-piece' }
+    ];
 
-      let score = 0;
-      let highScore = localStorage.getItem("tetrisHighScore_" + theme) || 0;
-      document.getElementById("highscore").innerText = highScore;
+    let current = null;
+    let curRow = 0;
+    let curCol = 3;
+    let interval = null;
 
-      let grid = [];
-      for (let r = 0; r < rows; r++) {
-        grid[r] = [];
-        for (let c = 0; c < cols; c++) {
-          const cell = document.createElement('div');
-          cell.className = 'cell';
-          game.appendChild(cell);
-          grid[r][c] = { filled: false, type: null, el: cell };
-        }
-      }
+    function newPiece() {
+      const pick = shapes[Math.floor(Math.random() * shapes.length)];
+      current = {
+        shape: pick.shape.map(row => row.slice()),
+        type: pick.type
+      };
+      curRow = 0;
+      curCol = 3;
+    }
 
-      const shapes = [
-        { shape: [[1,1,1,1]], type: 'i' },
-        { shape: [[1,1],[1,1]], type: 'o' },
-        { shape: [[0,1,0],[1,1,1]], type: 't' },
-        { shape: [[1,0,0],[1,1,1]], type: 'j' },
-        { shape: [[0,0,1],[1,1,1]], type: 'l' },
-        { shape: [[1,1,0],[0,1,1]], type: 's' },
-        { shape: [[0,1,1],[1,1,0]], type: 'z' }
-      ];
-
-      let current = null;
-      let curRow = 0;
-      let curCol = 3;
-      let interval = null;
-
-      function newPiece() {
-        const pick = shapes[Math.floor(Math.random() * shapes.length)];
-        current = {
-          shape: pick.shape.map(row => row.slice()),
-          type: pick.type
-        };
-        curRow = 0;
-        curCol = 3;
-      }
-
-      function collides(r, c, shape) {
-        for (let i = 0; i < shape.length; i++) {
-          for (let j = 0; j < shape[i].length; j++) {
-            if (shape[i][j]) {
-              const nr = r + i;
-              const nc = c + j;
-              if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return true;
-              if (grid[nr][nc].filled) return true;
-            }
+    function collides(r, c, shape) {
+      for (let i = 0; i < shape.length; i++) {
+        for (let j = 0; j < shape[i].length; j++) {
+          if (shape[i][j]) {
+            const nr = r + i;
+            const nc = c + j;
+            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return true;
+            if (grid[nr][nc].filled) return true;
           }
         }
-        return false;
+      }
+      return false;
+    }
+
+    function mergePiece() {
+      for (let i = 0; i < current.shape.length; i++) {
+        for (let j = 0; j < current.shape[i].length; j++) {
+          if (current.shape[i][j]) {
+            const nr = curRow + i;
+            const nc = curCol + j;
+            grid[nr][nc].filled = true;
+            grid[nr][nc].type = current.type;
+          }
+        }
+      }
+      clearLines();
+    }
+
+    function clearLines() {
+      let linesCleared = 0;
+
+      for (let r = rows - 1; r >= 0; r--) {
+        let full = true;
+        for (let c = 0; c < cols; c++) {
+          if (!grid[r][c].filled) {
+            full = false;
+            break;
+          }
+        }
+        if (full) {
+          linesCleared++;
+          for (let rr = r; rr > 0; rr--) {
+            for (let c = 0; c < cols; c++) {
+              grid[rr][c].filled = grid[rr-1][c].filled;
+              grid[rr][c].type = grid[rr-1][c].type;
+            }
+          }
+          for (let c = 0; c < cols; c++) {
+            grid[0][c].filled = false;
+            grid[0][c].type = null;
+          }
+          r++;
+        }
       }
 
-      function mergePiece() {
+      if (linesCleared > 0) {
+        score += linesCleared * 100;
+        document.getElementById("score").innerText = score;
+
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem("tetrisHighScoreMinecraft", highScore);
+          document.getElementById("highscore").innerText = highScore;
+        }
+      }
+    }
+
+    function rotate(shape) {
+      const h = shape.length;
+      const w = shape[0].length;
+      const res = [];
+      for (let c = 0; c < w; c++) {
+        res[c] = [];
+        for (let r = h - 1; r >= 0; r--) {
+          res[c].push(shape[r][c]);
+        }
+      }
+      return res;
+    }
+
+    function draw() {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cell = grid[r][c];
+          cell.el.className = 'cell';
+          if (cell.filled && cell.type) {
+            cell.el.classList.add(cell.type);
+          }
+        }
+      }
+      if (current) {
         for (let i = 0; i < current.shape.length; i++) {
           for (let j = 0; j < current.shape[i].length; j++) {
             if (current.shape[i][j]) {
               const nr = curRow + i;
               const nc = curCol + j;
-              grid[nr][nc].filled = true;
-              grid[nr][nc].type = theme + "-" + current.type;
-            }
-          }
-        }
-        clearLines();
-      }
-
-      function clearLines() {
-        let linesCleared = 0;
-
-        for (let r = rows - 1; r >= 0; r--) {
-          let full = true;
-          for (let c = 0; c < cols; c++) {
-            if (!grid[r][c].filled) {
-              full = false;
-              break;
-            }
-          }
-          if (full) {
-            linesCleared++;
-            for (let rr = r; rr > 0; rr--) {
-              for (let c = 0; c < cols; c++) {
-                grid[rr][c].filled = grid[rr-1][c].filled;
-                grid[rr][c].type = grid[rr-1][c].type;
-              }
-            }
-            for (let c = 0; c < cols; c++) {
-              grid[0][c].filled = false;
-              grid[0][c].type = null;
-            }
-            r++;
-          }
-        }
-
-        if (linesCleared > 0) {
-          score += linesCleared * 100;
-          document.getElementById("score").innerText = score;
-
-          if (score > highScore) {
-            highScore = score;
-            localStorage.setItem("tetrisHighScore_" + theme, highScore);
-            document.getElementById("highscore").innerText = highScore;
-          }
-        }
-      }
-
-      function rotate(shape) {
-        const h = shape.length;
-        const w = shape[0].length;
-        const res = [];
-        for (let c = 0; c < w; c++) {
-          res[c] = [];
-          for (let r = h - 1; r >= 0; r--) {
-            res[c].push(shape[r][c]);
-          }
-        }
-        return res;
-      }
-
-      function draw() {
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            const cell = grid[r][c];
-            cell.el.className = 'cell';
-            if (cell.filled && cell.type) {
-              cell.el.classList.add(cell.type);
-            }
-          }
-        }
-        if (current) {
-          for (let i = 0; i < current.shape.length; i++) {
-            for (let j = 0; j < current.shape[i].length; j++) {
-              if (current.shape[i][j]) {
-                const nr = curRow + i;
-                const nc = curCol + j;
-                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                  grid[nr][nc].el.classList.add(theme + "-" + current.type);
-                }
+              if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                grid[nr][nc].el.classList.add(current.type);
               }
             }
           }
         }
       }
-
-      function step() {
-        if (!current) return;
-        if (!collides(curRow + 1, curCol, current.shape)) {
-          curRow++;
-        } else {
-          mergePiece();
-          newPiece();
-        }
-        draw();
-      }
-
-      document.addEventListener('keydown', e => {
-        if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
-          e.preventDefault();
-        }
-
-        if (!current) return;
-
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-          if (!collides(curRow, curCol - 1, current.shape)) curCol--;
-        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-          if (!collides(curRow, curCol + 1, current.shape)) curCol++;
-        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-          if (!collides(curRow + 1, curCol, current.shape)) curRow++;
-        } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-          const rotated = rotate(current.shape);
-          if (!collides(curRow, curCol, rotated)) current.shape = rotated;
-        }
-        draw();
-      });
-
-      newPiece();
-      draw();
-      interval = setInterval(step, 500);
     }
+
+    function step() {
+      if (!current) return;
+      if (!collides(curRow + 1, curCol, current.shape)) {
+        curRow++;
+      } else {
+        mergePiece();
+        newPiece();
+      }
+      draw();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (!current) return;
+
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        if (!collides(curRow, curCol - 1, current.shape)) curCol--;
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        if (!collides(curRow, curCol + 1, current.shape)) curCol++;
+      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        if (!collides(curRow + 1, curCol, current.shape)) curRow++;
+      } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        const rotated = rotate(current.shape);
+        if (!collides(curRow, curCol, rotated)) current.shape = rotated;
+      }
+      draw();
+    });
+
+    newPiece();
+    draw();
+    interval = setInterval(step, 500);
   </script>
 
 </body>

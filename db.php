@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
 $user = "root";
-$pass = ""; // or your actual password
-$dbname = "tetris"; // FIXED
+$pass = ""; 
+$dbname = "tetrisdb"; // CONFIRMED CORRECT
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

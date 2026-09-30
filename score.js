@@ -1,5 +1,5 @@
 function sendScore(username, score) {
-    fetch("http://localhost/tetris_server/submit_score.php", {
+    fetch("https://motels-abraham-pennsylvania-ready.trycloudflare.com/submit_score.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"

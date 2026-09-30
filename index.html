@@ -7,7 +7,16 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #1a1a1a;
+      background:
+        radial-gradient(circle at center, transparent 0%, #000000aa 70%, #000000ff 100%),
+        #2f2f2f;
+      /* if you later add a stone image, you can do:
+         background:
+           radial-gradient(circle at center, transparent 0%, #000000aa 70%, #000000ff 100%),
+           url("stone.png");
+      */
+      background-size: cover;
+      background-position: center;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -17,7 +26,6 @@
       transition: opacity 1s ease;
     }
 
-    /* GAME BOARD */
     #game {
       display: grid;
       grid-template-columns: repeat(10, 24px);
@@ -36,66 +44,100 @@
       border-radius: 2px;
     }
 
-    /* MINECRAFT‑STYLE BLOCK TEXTURES (CSS simulated) */
-
-    /* Diamond block */
+    /* Diamond block (I-piece) */
     .i-piece {
-      background: linear-gradient(135deg, #4fd3ff, #2aa8cc);
-      box-shadow: inset 0 0 6px #1a6a80;
+      background:
+        radial-gradient(circle at 20% 20%, #ffffff66 0, transparent 40%),
+        radial-gradient(circle at 80% 80%, #ffffff33 0, transparent 45%),
+        linear-gradient(135deg, #6df2ff, #2aa8cc);
+      box-shadow: inset 0 0 8px #1a6a80;
     }
 
-    /* Grass block */
+    /* Grass block (O-piece) */
     .o-piece {
-      background: linear-gradient(#4caf50 40%, #795548 40%);
-      box-shadow: inset 0 0 4px #2e7d32;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #4caf50,
+          #4caf50 4px,
+          #3e8e41 4px,
+          #3e8e41 8px
+        ),
+        linear-gradient(#4caf50 40%, #6d4c41 40%);
+      box-shadow: inset 0 0 6px #1b5e20;
     }
 
-    /* Purpur block */
+    /* Stone Brick (T-piece) */
     .t-piece {
-      background: linear-gradient(135deg, #b57aff, #8e4bd1);
-      box-shadow: inset 0 0 6px #5a2a8a;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #7d7d7d,
+          #7d7d7d 8px,
+          #6a6a6a 8px,
+          #6a6a6a 16px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          #8d8d8d,
+          #8d8d8d 8px,
+          #7a7a7a 8px,
+          #7a7a7a 16px
+        );
+      box-shadow: inset 0 0 6px #3a3a3a;
     }
 
-    /* Cobblestone */
+    /* Cobblestone (J-piece) */
     .j-piece {
-      background: repeating-linear-gradient(
-        45deg,
-        #9e9e9e,
-        #9e9e9e 4px,
-        #757575 4px,
-        #757575 8px
-      );
-      box-shadow: inset 0 0 4px #424242;
+      background:
+        radial-gradient(circle at 20% 30%, #bdbdbd 0, #757575 40%),
+        radial-gradient(circle at 70% 60%, #bdbdbd 0, #616161 45%),
+        repeating-linear-gradient(
+          45deg,
+          #9e9e9e,
+          #9e9e9e 4px,
+          #757575 4px,
+          #757575 8px
+        );
+      box-shadow: inset 0 0 6px #424242;
     }
 
-    /* Oak planks */
+    /* Oak planks (L-piece) */
     .l-piece {
-      background: repeating-linear-gradient(
-        90deg,
-        #c49b63,
-        #c49b63 6px,
-        #a67c52 6px,
-        #a67c52 12px
-      );
-      box-shadow: inset 0 0 4px #5d3f1f;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #c49b63,
+          #c49b63 6px,
+          #b07f4f 6px,
+          #b07f4f 12px
+        ),
+        linear-gradient(#c49b63, #a67c52);
+      box-shadow: inset 0 0 6px #5d3f1f;
     }
 
-    /* Leaves */
+    /* Leaves (S-piece) */
     .s-piece {
-      background: repeating-linear-gradient(
-        45deg,
-        #4caf50,
-        #4caf50 4px,
-        #388e3c 4px,
-        #388e3c 8px
-      );
-      box-shadow: inset 0 0 4px #1b5e20;
+      background:
+        radial-gradient(circle at 20% 20%, #66bb6a 0, transparent 40%),
+        radial-gradient(circle at 80% 70%, #43a047 0, transparent 45%),
+        repeating-linear-gradient(
+          45deg,
+          #4caf50,
+          #4caf50 4px,
+          #388e3c 4px,
+          #388e3c 8px
+        );
+      box-shadow: inset 0 0 6px #1b5e20;
     }
 
-    /* Redstone block */
+    /* Redstone block (Z-piece) */
     .z-piece {
-      background: linear-gradient(135deg, #ff3b3b, #b30000);
-      box-shadow: inset 0 0 6px #4a0000;
+      background:
+        radial-gradient(circle at 30% 30%, #ff7777 0, transparent 40%),
+        radial-gradient(circle at 70% 70%, #ff4444 0, transparent 45%),
+        linear-gradient(135deg, #ff3b3b, #b30000);
+      box-shadow: inset 0 0 8px #4a0000;
     }
 
     #scoreboard {
@@ -131,7 +173,7 @@
   </div>
 
   <script>
-    /* Fade in */
+    /* Fade in + music */
     window.onload = () => {
       document.body.style.opacity = "1";
 
@@ -166,13 +208,13 @@
     }
 
     const shapes = [
-      { shape: [[1,1,1,1]], type: 'i-piece' },
-      { shape: [[1,1],[1,1]], type: 'o-piece' },
-      { shape: [[0,1,0],[1,1,1]], type: 't-piece' },
-      { shape: [[1,0,0],[1,1,1]], type: 'j-piece' },
-      { shape: [[0,0,1],[1,1,1]], type: 'l-piece' },
-      { shape: [[1,1,0],[0,1,1]], type: 's-piece' },
-      { shape: [[0,1,1],[1,1,0]], type: 'z-piece' }
+      { shape: [[1,1,1,1]], type: 'i-piece' },          // Diamond
+      { shape: [[1,1],[1,1]], type: 'o-piece' },        // Grass
+      { shape: [[0,1,0],[1,1,1]], type: 't-piece' },    // Stone Brick
+      { shape: [[1,0,0],[1,1,1]], type: 'j-piece' },    // Cobblestone
+      { shape: [[0,0,1],[1,1,1]], type: 'l-piece' },    // Planks
+      { shape: [[1,1,0],[0,1,1]], type: 's-piece' },    // Leaves
+      { shape: [[0,1,1],[1,1,0]], type: 'z-piece' }     // Redstone
     ];
 
     let current = null;

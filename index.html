@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Tetris in HTML</title>
+  <title>BlueTigerz Tetris</title>
   <style>
     body {
-      background: #111;
+      background: radial-gradient(circle at top, #222 0, #050505 60%);
       color: #eee;
       font-family: Arial, sans-serif;
       display: flex;
@@ -18,35 +18,55 @@
     }
     h1 {
       margin-bottom: 5px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0ff;
+      text-shadow: 0 0 8px #0ff;
     }
     #game {
       display: grid;
       grid-template-columns: repeat(10, 24px);
       grid-template-rows: repeat(20, 24px);
       gap: 1px;
-      background: #333;
-      padding: 4px;
+      background: #111;
+      padding: 6px;
+      border-radius: 6px;
+      box-shadow: 0 0 20px #000;
     }
     .cell {
       width: 24px;
       height: 24px;
       background: #000;
+      border-radius: 3px;
     }
     .filled {
       background: #0f9;
     }
+    .i-piece { background: #00f0ff; }
+    .o-piece { background: #ffd500; }
+    .t-piece { background: #c000ff; }
+    .j-piece { background: #0040ff; }
+    .l-piece { background: #ff7f00; }
+    .s-piece { background: #00ff4c; }
+    .z-piece { background: #ff004c; }
+
     #info {
       margin-top: 10px;
       font-size: 14px;
       text-align: center;
     }
+    #info span {
+      color: #0ff;
+    }
   </style>
 </head>
 <body>
-  <h1>Tetris</h1>
+  <h1>BlueTigerz Tetris</h1>
   <div id="game"></div>
   <div id="info">
-    Use arrow keys: ← → to move, ↑ to rotate, ↓ to drop faster.
+    Controls: <span>← →</span> or <span>A D</span> to move,
+    <span>↑</span> or <span>W</span> to rotate,
+    <span>↓</span> or <span>S</span> to drop faster.
   </div>
 
   <script>
@@ -62,19 +82,40 @@
         const cell = document.createElement('div');
         cell.className = 'cell';
         game.appendChild(cell);
-        grid[r][c] = { filled: false, el: cell };
+        grid[r][c] = { filled: false, type: null, el: cell };
       }
     }
 
-    // Tetromino shapes
+    // Tetromino shapes + type name
     const shapes = [
-      [[1,1,1,1]],                 // I
-      [[1,1],[1,1]],               // O
-      [[0,1,0],[1,1,1]],           // T
-      [[1,0,0],[1,1,1]],           // J
-      [[0,0,1],[1,1,1]],           // L
-      [[1,1,0],[0,1,1]],           // S
-      [[0,1,1],[1,1,0]]            // Z
+      { // I
+        shape: [[1,1,1,1]],
+        type: 'i-piece'
+      },
+      { // O
+        shape: [[1,1],[1,1]],
+        type: 'o-piece'
+      },
+      { // T
+        shape: [[0,1,0],[1,1,1]],
+        type: 't-piece'
+      },
+      { // J
+        shape: [[1,0,0],[1,1,1]],
+        type: 'j-piece'
+      },
+      { // L
+        shape: [[0,0,1],[1,1,1]],
+        type: 'l-piece'
+      },
+      { // S
+        shape: [[1,1,0],[0,1,1]],
+        type: 's-piece'
+      },
+      { // Z
+        shape: [[0,1,1],[1,1,0]],
+        type: 'z-piece'
+      }
     ];
 
     let current = null;
@@ -83,14 +124,17 @@
     let interval = null;
 
     function newPiece() {
-      const shape = shapes[Math.floor(Math.random() * shapes.length)];
-      current = shape.map(row => row.slice());
+      const pick = shapes[Math.floor(Math.random() * shapes.length)];
+      current = {
+        shape: pick.shape.map(row => row.slice()),
+        type: pick.type
+      };
       curRow = 0;
       curCol = 3;
-      if (collides(curRow, curCol, current)) {
-        // Game over: stop movement
+      if (collides(curRow, curCol, current.shape)) {
         clearInterval(interval);
-        document.getElementById('info').innerText = 'Game Over – refresh to play again.';
+        document.getElementById('info').innerText =
+          'Game Over – refresh the page to play again.';
       }
     }
 
@@ -109,12 +153,13 @@
     }
 
     function mergePiece() {
-      for (let i = 0; i < current.length; i++) {
-        for (let j = 0; j < current[i].length; j++) {
-          if (current[i][j]) {
+      for (let i = 0; i < current.shape.length; i++) {
+        for (let j = 0; j < current.shape[i].length; j++) {
+          if (current.shape[i][j]) {
             const nr = curRow + i;
             const nc = curCol + j;
             grid[nr][nc].filled = true;
+            grid[nr][nc].type = current.type;
           }
         }
       }
@@ -131,16 +176,17 @@
           }
         }
         if (full) {
-          // Move everything above down
           for (let rr = r; rr > 0; rr--) {
             for (let c = 0; c < cols; c++) {
               grid[rr][c].filled = grid[rr-1][c].filled;
+              grid[rr][c].type = grid[rr-1][c].type;
             }
           }
           for (let c = 0; c < cols; c++) {
             grid[0][c].filled = false;
+            grid[0][c].type = null;
           }
-          r++; // re-check same row
+          r++;
         }
       }
     }
@@ -159,21 +205,23 @@
     }
 
     function draw() {
-      // Clear all
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          grid[r][c].el.classList.toggle('filled', grid[r][c].filled);
+          const cell = grid[r][c];
+          cell.el.className = 'cell';
+          if (cell.filled && cell.type) {
+            cell.el.classList.add('filled', cell.type);
+          }
         }
       }
-      // Draw current piece
       if (current) {
-        for (let i = 0; i < current.length; i++) {
-          for (let j = 0; j < current[i].length; j++) {
-            if (current[i][j]) {
+        for (let i = 0; i < current.shape.length; i++) {
+          for (let j = 0; j < current.shape[i].length; j++) {
+            if (current.shape[i][j]) {
               const nr = curRow + i;
               const nc = curCol + j;
               if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                grid[nr][nc].el.classList.add('filled');
+                grid[nr][nc].el.classList.add('filled', current.type);
               }
             }
           }
@@ -183,7 +231,7 @@
 
     function step() {
       if (!current) return;
-      if (!collides(curRow + 1, curCol, current)) {
+      if (!collides(curRow + 1, curCol, current.shape)) {
         curRow++;
       } else {
         mergePiece();
@@ -193,16 +241,22 @@
     }
 
     document.addEventListener('keydown', e => {
+      // Stop arrow keys from scrolling the page
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+      }
+
       if (!current) return;
-      if (e.key === 'ArrowLeft') {
-        if (!collides(curRow, curCol - 1, current)) curCol--;
-      } else if (e.key === 'ArrowRight') {
-        if (!collides(curRow, curCol + 1, current)) curCol++;
-      } else if (e.key === 'ArrowDown') {
-        if (!collides(curRow + 1, curCol, current)) curRow++;
-      } else if (e.key === 'ArrowUp') {
-        const rotated = rotate(current);
-        if (!collides(curRow, curCol, rotated)) current = rotated;
+
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        if (!collides(curRow, curCol - 1, current.shape)) curCol--;
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        if (!collides(curRow, curCol + 1, current.shape)) curCol++;
+      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        if (!collides(curRow + 1, curCol, current.shape)) curRow++;
+      } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        const rotated = rotate(current.shape);
+        if (!collides(curRow, curCol, rotated)) current.shape = rotated;
       }
       draw();
     });

@@ -1,5 +1,5 @@
 function sendScore(username, score) {
-    fetch("https://motels-abraham-pennsylvania-ready.trycloudflare.com/submit_score.php", {
+    fetch("https://briefs-gay-stanford-superior.trycloudflare.com/get_leaderboard.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"

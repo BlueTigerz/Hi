@@ -1,5 +1,5 @@
 function sendScore(username, score) {
-    fetch("submit_score.php", {
+    fetch("http://localhost/tetris_server/submit_score.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"

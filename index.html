@@ -1,19 +1,215 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Website</title>
+  <meta charset="UTF-8">
+  <title>Tetris in HTML</title>
   <style>
     body {
       background: #111;
       color: #eee;
       font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding-top: 20px;
+    }
+    h1 {
+      margin-bottom: 5px;
+    }
+    #game {
+      display: grid;
+      grid-template-columns: repeat(10, 24px);
+      grid-template-rows: repeat(20, 24px);
+      gap: 1px;
+      background: #333;
+      padding: 4px;
+    }
+    .cell {
+      width: 24px;
+      height: 24px;
+      background: #000;
+    }
+    .filled {
+      background: #0f9;
+    }
+    #info {
+      margin-top: 10px;
+      font-size: 14px;
       text-align: center;
-      padding-top: 50px;
     }
   </style>
 </head>
 <body>
-  <h1>Hello World</h1>
-  <p>This is my completely free website hosted on GitHub Pages.</p>
+  <h1>Tetris</h1>
+  <div id="game"></div>
+  <div id="info">
+    Use arrow keys: ← → to move, ↑ to rotate, ↓ to drop faster.
+  </div>
+
+  <script>
+    const rows = 20;
+    const cols = 10;
+    const game = document.getElementById('game');
+
+    // Create grid
+    let grid = [];
+    for (let r = 0; r < rows; r++) {
+      grid[r] = [];
+      for (let c = 0; c < cols; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        game.appendChild(cell);
+        grid[r][c] = { filled: false, el: cell };
+      }
+    }
+
+    // Tetromino shapes
+    const shapes = [
+      [[1,1,1,1]],                 // I
+      [[1,1],[1,1]],               // O
+      [[0,1,0],[1,1,1]],           // T
+      [[1,0,0],[1,1,1]],           // J
+      [[0,0,1],[1,1,1]],           // L
+      [[1,1,0],[0,1,1]],           // S
+      [[0,1,1],[1,1,0]]            // Z
+    ];
+
+    let current = null;
+    let curRow = 0;
+    let curCol = 3;
+    let interval = null;
+
+    function newPiece() {
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      current = shape.map(row => row.slice());
+      curRow = 0;
+      curCol = 3;
+      if (collides(curRow, curCol, current)) {
+        // Game over: stop movement
+        clearInterval(interval);
+        document.getElementById('info').innerText = 'Game Over – refresh to play again.';
+      }
+    }
+
+    function collides(r, c, shape) {
+      for (let i = 0; i < shape.length; i++) {
+        for (let j = 0; j < shape[i].length; j++) {
+          if (shape[i][j]) {
+            const nr = r + i;
+            const nc = c + j;
+            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return true;
+            if (grid[nr][nc].filled) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function mergePiece() {
+      for (let i = 0; i < current.length; i++) {
+        for (let j = 0; j < current[i].length; j++) {
+          if (current[i][j]) {
+            const nr = curRow + i;
+            const nc = curCol + j;
+            grid[nr][nc].filled = true;
+          }
+        }
+      }
+      clearLines();
+    }
+
+    function clearLines() {
+      for (let r = rows - 1; r >= 0; r--) {
+        let full = true;
+        for (let c = 0; c < cols; c++) {
+          if (!grid[r][c].filled) {
+            full = false;
+            break;
+          }
+        }
+        if (full) {
+          // Move everything above down
+          for (let rr = r; rr > 0; rr--) {
+            for (let c = 0; c < cols; c++) {
+              grid[rr][c].filled = grid[rr-1][c].filled;
+            }
+          }
+          for (let c = 0; c < cols; c++) {
+            grid[0][c].filled = false;
+          }
+          r++; // re-check same row
+        }
+      }
+    }
+
+    function rotate(shape) {
+      const h = shape.length;
+      const w = shape[0].length;
+      const res = [];
+      for (let c = 0; c < w; c++) {
+        res[c] = [];
+        for (let r = h - 1; r >= 0; r--) {
+          res[c].push(shape[r][c]);
+        }
+      }
+      return res;
+    }
+
+    function draw() {
+      // Clear all
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          grid[r][c].el.classList.toggle('filled', grid[r][c].filled);
+        }
+      }
+      // Draw current piece
+      if (current) {
+        for (let i = 0; i < current.length; i++) {
+          for (let j = 0; j < current[i].length; j++) {
+            if (current[i][j]) {
+              const nr = curRow + i;
+              const nc = curCol + j;
+              if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                grid[nr][nc].el.classList.add('filled');
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function step() {
+      if (!current) return;
+      if (!collides(curRow + 1, curCol, current)) {
+        curRow++;
+      } else {
+        mergePiece();
+        newPiece();
+      }
+      draw();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (!current) return;
+      if (e.key === 'ArrowLeft') {
+        if (!collides(curRow, curCol - 1, current)) curCol--;
+      } else if (e.key === 'ArrowRight') {
+        if (!collides(curRow, curCol + 1, current)) curCol++;
+      } else if (e.key === 'ArrowDown') {
+        if (!collides(curRow + 1, curCol, current)) curRow++;
+      } else if (e.key === 'ArrowUp') {
+        const rotated = rotate(current);
+        if (!collides(curRow, curCol, rotated)) current = rotated;
+      }
+      draw();
+    });
+
+    newPiece();
+    draw();
+    interval = setInterval(step, 500);
+  </script>
 </body>
 </html>

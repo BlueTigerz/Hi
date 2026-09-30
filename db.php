@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = ""; // or your actual password
-$dbname = "tetrisdb";
+$dbname = "tetris"; // FIXED
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

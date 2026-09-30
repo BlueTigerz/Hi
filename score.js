@@ -14,5 +14,6 @@ function sendScore(username, score) {
     })
     .catch(err => {
         console.error("Error sending score:", err);
+        alert("Error sending score: " + err);
     });
 }

@@ -4,13 +4,10 @@ include "db.php";
 $username = $_POST['username'];
 $score = $_POST['score'];
 
-// Insert the score
-$sql = "INSERT INTO leaderboard (username, score, highscore)
-        VALUES ('$username', $score, $score)";
+// Insert score + highscore (same value for now)
+$stmt = $conn->prepare("INSERT INTO leaderboard (username, score, highscore) VALUES (?, ?, ?)");
+$stmt->bind_param("sii", $username, $score, $score);
+$stmt->execute();
 
-if ($conn->query($sql) === TRUE) {
-    echo "Score saved";
-} else {
-    echo "Error: " . $conn->error;
-}
+echo "Score saved!";
 ?>

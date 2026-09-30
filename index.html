@@ -40,40 +40,13 @@
     }
 
     /* REAL PNG TEXTURES */
-    .i-piece {
-      background-image: url("diamondore.png");
-      background-size: cover;
-    }
-
-    .o-piece {
-      background-image: url("coalore.png");
-      background-size: cover;
-    }
-
-    .t-piece {
-      background-image: url("cobblestone.png");
-      background-size: cover;
-    }
-
-    .j-piece {
-      background-image: url("planksoak.png");
-      background-size: cover;
-    }
-
-    .l-piece {
-      background-image: url("bookshelf.png");
-      background-size: cover;
-    }
-
-    .s-piece {
-      background-image: url("grassblockside.png");
-      background-size: cover;
-    }
-
-    .z-piece {
-      background-image: url("tnt.png");
-      background-size: cover;
-    }
+    .i-piece { background-image: url("diamondore.png"); background-size: cover; }
+    .o-piece { background-image: url("coalore.png"); background-size: cover; }
+    .t-piece { background-image: url("cobblestone.png"); background-size: cover; }
+    .j-piece { background-image: url("planksoak.png"); background-size: cover; }
+    .l-piece { background-image: url("bookshelf.png"); background-size: cover; }
+    .s-piece { background-image: url("grassblockside.png"); background-size: cover; }
+    .z-piece { background-image: url("tnt.png"); background-size: cover; }
 
     #scoreboard {
       margin-top: 10px;
@@ -162,6 +135,12 @@
       };
       curRow = 0;
       curCol = 3;
+
+      /* GAME OVER CHECK */
+      if (collides(curRow, curCol, current.shape)) {
+        alert("Game Over!");
+        clearInterval(interval);
+      }
     }
 
     function collides(r, c, shape) {

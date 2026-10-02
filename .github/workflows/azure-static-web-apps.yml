@@ -1,0 +1,67 @@
+name: Deploy to Azure Static Web Apps
+
+# Deploys the React frontend (dist/) and the managed Functions API (api/)
+# together. Managed Functions can only be deployed as part of the Static Web
+# App, so both ship in one deploy step.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write # lets the deploy action comment the preview URL on PRs
+
+jobs:
+  build_and_deploy:
+    name: Build and deploy
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api/package-lock.json
+
+      - name: Build frontend
+        run: |
+          npm ci
+          npm run build
+        env:
+          # Optional repository variable; empty = same-origin /api.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+
+      - name: Install API production dependencies
+        working-directory: api
+        run: npm ci --omit=dev
+
+      - name: Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: dist
+          api_location: api
+          output_location: ''
+          skip_app_build: true
+          skip_api_build: true
+
+  close_pull_request:
+    name: Close PR preview environment
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: close

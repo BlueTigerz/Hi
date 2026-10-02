@@ -1,0 +1,187 @@
+:root {
+  --green: #55ff55;
+  --green-glow: #2b7c2b;
+  --cell: 24px;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background:
+    radial-gradient(circle at center, transparent 0%, #000000aa 70%, #000000ff 100%),
+    #2f2f2f;
+  background-attachment: fixed;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  animation: fade-in 1s ease;
+}
+
+h1 {
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green-glow);
+}
+
+.board-wrap {
+  position: relative;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, var(--cell));
+  grid-template-rows: repeat(20, var(--cell));
+  gap: 1px;
+  background: #2e2e2e;
+  padding: 6px;
+  border-radius: 6px;
+  box-shadow: 0 0 20px #000;
+}
+
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  background: #000 center / cover no-repeat;
+  border-radius: 2px;
+  image-rendering: pixelated;
+}
+
+.piece-i { background-image: url('./assets/diamondore.png'); }
+.piece-o { background-image: url('./assets/coalore.png'); }
+.piece-t { background-image: url('./assets/cobblestone.png'); }
+.piece-j { background-image: url('./assets/planksoak.png'); }
+.piece-l { background-image: url('./assets/bookshelf.png'); }
+.piece-s { background-image: url('./assets/grassblockside.png'); }
+.piece-z { background-image: url('./assets/tnt.png'); }
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background: #000000cc;
+  border-radius: 6px;
+  color: var(--green);
+  text-shadow: 0 0 4px var(--green-glow);
+  text-align: center;
+}
+
+.overlay h2,
+.overlay p {
+  margin: 0;
+}
+
+.overlay form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.overlay input,
+.overlay button {
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--green);
+}
+
+.overlay input {
+  background: #111;
+  color: #fff;
+}
+
+.overlay button {
+  background: var(--green-glow);
+  color: #fff;
+  cursor: pointer;
+}
+
+.overlay button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.overlay .error {
+  color: #ff6b6b;
+}
+
+.overlay .muted {
+  color: #aaa;
+  font-size: 13px;
+  text-shadow: none;
+}
+
+.sound-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 12px;
+  color: #ccc;
+  font-size: 13px;
+}
+
+.sound-controls button {
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+  background: transparent;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sound-controls input[type='range'] {
+  width: 110px;
+  accent-color: var(--green);
+}
+
+.volume-label {
+  min-width: 3ch;
+  text-align: right;
+}
+
+.scoreboard {
+  margin-top: 10px;
+  font-size: 16px;
+  color: var(--green);
+  text-shadow: 0 0 4px var(--green-glow);
+}
+
+.info {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #ccc;
+  text-align: center;
+}
+
+.leaderboard {
+  margin-top: 20px;
+  color: var(--green);
+  text-shadow: 0 0 4px var(--green-glow);
+  font-size: 16px;
+}
+
+.leaderboard table {
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--green);
+}
